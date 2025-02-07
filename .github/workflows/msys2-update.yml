@@ -1,0 +1,27 @@
+name: MSYS2 Update
+
+on:
+  workflow_dispatch:  # Manuelles Starten möglich
+  schedule:
+    - cron: '0 0 * * 1'  # Läuft jeden Montag um Mitternacht UTC
+
+jobs:
+  update-msys2:
+    runs-on: windows-latest  # Windows-Runner benutzen
+
+    steps:
+      - name: Set up MSYS2
+        uses: msys2/setup-msys2@v2
+        with:
+          msystem: MINGW64  # Oder MSYS, MINGW32, UCRT64, CLANG64 je nach Bedarf
+          update: true      # Aktualisiert MSYS2 während der Installation
+
+      - name: Update all MSYS2 packages
+        shell: msys2 {0}
+        run: |
+          pacman -Syu --noconfirm
+          pacman -Su --noconfirm  # Falls ein Restart nötig ist
+
+      - name: Verify installation
+        shell: msys2 {0}
+        run: pacman -Qe  # Zeigt installierte Pakete
